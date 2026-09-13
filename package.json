@@ -1,0 +1,1 @@
+{"name":"zodiac-soul","private":true,"type":"module","dependencies":{"@netlify/functions":"^4.2.5","astronomy-engine":"^2.1.19","openai":"^5.20.0"}}
