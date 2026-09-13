@@ -4,6 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vedic Astrology Advisor — Jyotish Reading</title>
+<meta name="description" content="A thoughtful, personalized Vedic astrology reading rooted in classical Jyotish traditions." />
+<meta name="theme-color" content="#171a2e" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Prata&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -359,6 +364,152 @@ textarea { resize: vertical; min-height: 80px; }
   font-size: 12px; color: var(--text-tertiary);
   padding-top: 1.5rem;
   border-top: 0.5px solid var(--border);
+}
+
+/* ── Celestial editorial theme ── */
+:root {
+  --bg: #f7f0e2;
+  --bg-secondary: #efe3ce;
+  --bg-tertiary: #171a2e;
+  --text-primary: #222131;
+  --text-secondary: #686170;
+  --text-tertiary: #8f8490;
+  --border: rgba(57, 46, 56, 0.14);
+  --border-md: rgba(57, 46, 56, 0.25);
+  --purple-50: #f2e6d0;
+  --purple-200: #dcc69e;
+  --purple-400: #9a632e;
+  --purple-600: #734019;
+  --purple-800: #3f2516;
+  --teal-50: #dfe9df;
+  --teal-400: #53745e;
+  --teal-600: #345343;
+  --coral-50: #f4dfd2;
+  --coral-400: #a95236;
+  --coral-600: #7c3825;
+  --font: 'DM Sans', sans-serif;
+  --display: 'Prata', serif;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 18px;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(198, 139, 64, .13), transparent 24rem),
+    radial-gradient(circle at 88% 74%, rgba(112, 88, 132, .12), transparent 28rem),
+    var(--bg-tertiary);
+  background-attachment: fixed;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .34;
+  background-image: radial-gradient(rgba(255, 240, 203, .75) .7px, transparent .7px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+.page { max-width: 920px; padding: 3rem 1.25rem 4rem; position: relative; z-index: 1; }
+.hero {
+  min-height: 410px;
+  padding: 5rem clamp(1.5rem, 8vw, 6rem) 4rem;
+  color: #f7ecd5;
+  background:
+    linear-gradient(112deg, rgba(23,26,46,.94), rgba(34,27,50,.82)),
+    repeating-radial-gradient(circle at 88% 35%, transparent 0 39px, rgba(221,179,105,.22) 40px 41px);
+  border: 1px solid rgba(224, 183, 112, .32);
+  border-radius: 28px 28px 110px 28px;
+  box-shadow: 0 24px 80px rgba(4, 5, 16, .38);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: rise-in .75s cubic-bezier(.2,.75,.25,1) both;
+}
+.hero::before {
+  top: 42px; left: auto; right: 8%; transform: none;
+  width: 182px; height: 182px;
+  border: 1px solid rgba(232, 190, 113, .42);
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 38%, rgba(207,154,77,.08) 39% 42%, transparent 43%);
+  box-shadow: inset 0 0 0 24px rgba(255,255,255,.018), 0 0 80px rgba(216,156,72,.1);
+}
+.hero::after {
+  content: 'ॐ';
+  position: absolute;
+  right: calc(8% + 56px); top: 87px;
+  font-family: var(--display);
+  font-size: 52px;
+  color: #d8aa68;
+  opacity: .82;
+}
+.hero-icon {
+  width: auto; height: auto; margin: 0 0 1.25rem;
+  justify-content: flex-start; gap: 8px;
+  color: #dcb06d; background: none; border-radius: 0;
+}
+.hero-icon::after { content: 'AN INNER-SKY READING'; font-size: 10px; letter-spacing: .22em; font-weight: 600; }
+.hero-icon i { color: #dcb06d; font-size: 19px; }
+.hero h1 {
+  max-width: 590px; color: #fff5df; font-family: var(--display);
+  font-size: clamp(2.7rem, 7vw, 5.2rem); line-height: .98; font-weight: 400;
+  letter-spacing: -.045em; margin-bottom: 1.25rem;
+}
+.hero p { margin: 0; max-width: 530px; color: #cfc4bb; font-size: 15px; line-height: 1.75; }
+.hero-badges { justify-content: flex-start; margin-top: 1.75rem; gap: 9px; }
+.badge { padding: 7px 12px; border: 1px solid rgba(230,196,145,.2); background: rgba(255,255,255,.06); color: #e1d6c9; backdrop-filter: blur(10px); }
+
+.steps { margin: 2.25rem auto 2.75rem; max-width: 520px; }
+.step-dot { width: 38px; height: 38px; color: #d6ccbe; background: #24263c; border-color: rgba(230,205,168,.35); }
+.step-dot .step-label { top: 45px; color: #a9a3af; letter-spacing: .08em; text-transform: uppercase; }
+.step-dot.active { background: #c78d48; border-color: #c78d48; color: #201c28; box-shadow: 0 0 0 6px rgba(199,141,72,.12); }
+.step-dot.active .step-label { color: #e6b87c; }
+.step-dot.done { background: #5f8069; border-color: #5f8069; }
+.step-line { background: rgba(232,218,197,.17); }
+
+#step1, #step2, #step3 { animation: rise-in .5s ease both; }
+.card, .loading-box, .result-body {
+  background: linear-gradient(140deg, #fbf6eb, #f4ead9);
+  border: 1px solid rgba(255,255,255,.62);
+  box-shadow: 0 14px 40px rgba(6,7,19,.18);
+}
+.card { padding: clamp(1.4rem, 4vw, 2.4rem); border-radius: 14px; margin-bottom: 1.25rem; }
+.card:first-child { border-top: 4px solid #b57938; }
+.section-label { color: #7b4821; letter-spacing: .16em; margin-bottom: 1.75rem; }
+label { font-weight: 600; color: #504957; letter-spacing: .01em; }
+input[type="text"], input[type="date"], input[type="time"], select, textarea {
+  padding: 12px 14px; background: rgba(255,253,247,.8); border: 1px solid #d8cab5;
+  border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+input:hover, select:hover, textarea:hover { border-color: #b69d7e; }
+input:focus, select:focus, textarea:focus { border-color: #a66a30; box-shadow: 0 0 0 4px rgba(166,106,48,.1); }
+.form-row { gap: 18px; }
+.concern-num { background: #2c2b40; color: #e7bd80; }
+.btn { min-height: 48px; border-radius: 7px; font-weight: 600; letter-spacing: .015em; transition: transform .2s, box-shadow .2s, background .2s; }
+.btn-primary { background: #9b612b; color: #fff8eb; box-shadow: 0 8px 24px rgba(100,56,21,.25); }
+.btn-primary:hover { background: #74421d; transform: translateY(-2px); box-shadow: 0 12px 28px rgba(100,56,21,.32); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary { background: #f7efdf; border: 1px solid #d2c2aa; }
+.card-info { background: #e2eadf; border-color: #b7cbb9; }
+.result-banner { background: #e6d4b8; border: 1px solid #c9a878; box-shadow: 0 12px 30px rgba(5,6,17,.16); }
+.result-avatar { background: #2e304b; color: #efc786; }
+.footer { color: #918b9b; border-color: rgba(234,220,197,.14); }
+
+@keyframes rise-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; scroll-behavior: auto !important; } }
+@media (max-width: 640px) {
+  .page { padding: .75rem .75rem 3rem; }
+  .hero { min-height: 500px; padding: 2rem 1.4rem 3rem; border-radius: 20px 20px 72px 20px; }
+  .hero::before { right: 50%; transform: translateX(50%); }
+  .hero::after { right: 50%; transform: translateX(50%); }
+  .hero h1 { font-size: 2.65rem; }
+  .hero-badges { gap: 6px; }
+  .badge { font-size: 10px; }
+  .steps { margin-bottom: 3rem; }
+  .card { padding: 1.35rem; }
 }
 </style>
 </head>
