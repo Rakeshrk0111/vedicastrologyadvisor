@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vedic Astrology Advisor — Jyotish Reading</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple-50: #EEEDFE;
+  --purple-200: #AFA9EC;
+  --purple-400: #7F77DD;
+  --purple-600: #534AB7;
+  --purple-800: #3C3489;
+  --purple-900: #26215C;
+  --teal-50: #E1F5EE;
+  --teal-400: #1D9E75;
+  --teal-600: #0F6E56;
+  --coral-50: #FAECE7;
+  --coral-400: #D85A30;
+  --coral-600: #993C1D;
+  --amber-50: #FAEEDA;
+  --amber-400: #BA7517;
+  --gray-100: #D3D1C7;
+  --bg: #ffffff;
+  --bg-secondary: #f7f7f5;
+  --bg-tertiary: #f1efe8;
+  --text-primary: #1a1a18;
+  --text-secondary: #5f5e5a;
+  --text-tertiary: #888780;
+  --border: rgba(0,0,0,0.12);
+  --border-md: rgba(0,0,0,0.22);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --font: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a18;
+    --bg-secondary: #242422;
+    --bg-tertiary: #2c2c2a;
+    --text-primary: #f0ede8;
+    --text-secondary: #b4b2a9;
+    --text-tertiary: #888780;
+    --border: rgba(255,255,255,0.1);
+    --border-md: rgba(255,255,255,0.18);
+    --purple-50: #26215C;
+    --purple-200: #3C3489;
+    --purple-400: #7F77DD;
+    --purple-800: #EEEDFE;
+    --teal-50: #04342C;
+    --teal-400: #5DCAA5;
+    --coral-50: #4A1B0C;
+    --coral-400: #F0997B;
+    --amber-50: #412402;
+  }
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── Layout ── */
+.page { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+/* ── Header ── */
+.hero {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-xl);
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%; transform: translateX(-50%);
+  width: 300px; height: 200px;
+  background: radial-gradient(ellipse, rgba(127,119,221,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-icon {
+  width: 60px; height: 60px;
+  background: var(--purple-50);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem;
+}
+.hero-icon i { font-size: 28px; color: var(--purple-600); }
+.hero h1 { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; }
+.hero p { font-size: 14px; color: var(--text-secondary); max-width: 400px; margin: 0 auto; }
+.hero-badges { display: flex; gap: 8px; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-purple { background: var(--purple-50); color: var(--purple-600); }
+.badge-teal { background: var(--teal-50); color: var(--teal-600); }
+.badge-coral { background: var(--coral-50); color: var(--coral-600); }
+
+/* ── Step indicator ── */
+.steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 1.5rem;
+}
+.step-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 0.5px solid var(--border-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg);
+  transition: all 0.2s;
+  position: relative;
+}
+.step-dot .step-label {
+  position: absolute; top: 38px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: var(--text-tertiary); white-space: nowrap;
+}
+.step-dot.active { background: var(--purple-600); color: white; border-color: var(--purple-600); }
+.step-dot.active .step-label { color: var(--purple-600); font-weight: 600; }
+.step-dot.done { background: var(--teal-400); color: white; border-color: var(--teal-400); }
+.step-line { flex: 1; max-width: 80px; height: 1px; background: var(--border); transition: background 0.3s; }
+.step-line.done { background: var(--teal-400); }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.card-accent {
+  background: var(--purple-50);
+  border-color: var(--purple-200);
+}
+.card-info {
+  background: var(--teal-50);
+  border-color: rgba(29,158,117,0.3);
+}
+
+/* ── Section labels ── */
+.section-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600;
+  color: var(--purple-600);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+.section-label i { font-size: 16px; }
+
+/* ── Forms ── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+.form-group { margin-bottom: 1.1rem; }
+.form-group:last-child { margin-bottom: 0; }
+label {
+  display: block;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+label .req { color: var(--coral-400); }
+input[type="text"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: var(--bg);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: none;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888780' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--purple-400);
+  box-shadow: 0 0 0 3px rgba(127,119,221,0.12);
+}
+textarea { resize: vertical; min-height: 80px; }
+.field-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+
+/* ── Concerns ── */
+.concern-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.concern-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--purple-50); color: var(--purple-600);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 11px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-primary {
+  background: var(--purple-600); color: white;
+  width: 100%;
+}
+.btn-primary:hover { background: var(--purple-800); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-secondary {
+  background: var(--bg); color: var(--text-secondary);
+  border: 0.5px solid var(--border-md);
+}
+.btn-secondary:hover { background: var(--bg-secondary); }
+.btn-row { display: flex; gap: 10px; }
+.btn-row .btn-secondary { flex: 1; }
+.btn-row .btn-primary { flex: 2; }
+
+/* ── Error ── */
+.error-msg {
+  font-size: 13px; color: var(--coral-600);
+  background: var(--coral-50);
+  border: 0.5px solid rgba(216,90,48,0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 14px; margin-top: 10px;
+  display: none; align-items: center; gap: 8px;
+}
+
+/* ── Loading ── */
+.loading-box {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+.spinner {
+  width: 44px; height: 44px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--purple-600);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-size: 15px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; }
+.loading-sub { font-size: 13px; color: var(--text-secondary); }
+.loading-pills {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+  margin-top: 1.5rem;
+}
+.loading-pill {
+  padding: 3px 10px; background: var(--bg-secondary);
+  border-radius: 20px; font-size: 11px; color: var(--text-tertiary);
+  border: 0.5px solid var(--border);
+}
+.loading-pill.active {
+  background: var(--purple-50); color: var(--purple-600);
+  border-color: var(--purple-200);
+}
+
+/* ── Result ── */
+.result-banner {
+  background: var(--purple-50);
+  border: 0.5px solid var(--purple-200);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.result-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--purple-400);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.result-banner-name { font-size: 17px; font-weight: 600; color: var(--purple-800); }
+.result-banner-sub { font-size: 12px; color: var(--purple-600); margin-top: 2px; }
+
+.result-body {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  font-size: 14px; line-height: 1.85;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+.result-body h3 {
+  font-size: 16px; font-weight: 600; color: var(--purple-600);
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid var(--purple-200);
+  display: flex; align-items: center; gap: 8px;
+}
+.result-body h3:first-child { margin-top: 0; }
+.result-body h4 {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+  margin: 1.25rem 0 0.5rem;
+}
+.result-body p { margin-bottom: 0.75rem; }
+.result-body ul, .result-body ol {
+  padding-left: 1.5rem; margin-bottom: 0.75rem;
+}
+.result-body li { margin-bottom: 4px; }
+.result-body strong { font-weight: 600; color: var(--purple-600); }
+.result-body em { font-style: italic; color: var(--text-secondary); }
+.result-body hr {
+  border: none; border-top: 0.5px solid var(--border);
+  margin: 1.5rem 0;
+}
+.result-body table {
+  width: 100%; border-collapse: collapse;
+  margin: 1rem 0; font-size: 13px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.result-body th {
+  background: var(--purple-50); color: var(--purple-800);
+  padding: 9px 12px; text-align: left;
+  font-weight: 600; font-size: 12px;
+  border-bottom: 0.5px solid var(--purple-200);
+}
+.result-body td {
+  padding: 9px 12px;
+  border-bottom: 0.5px solid var(--border);
+  vertical-align: top;
+}
+.result-body tr:last-child td { border-bottom: none; }
+.result-body tr:nth-child(even) td { background: var(--bg-secondary); }
+
+/* ── Footer ── */
+.footer {
+  text-align: center; margin-top: 3rem;
+  font-size: 12px; color: var(--text-tertiary);
+  padding-top: 1.5rem;
+  border-top: 0.5px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-icon"><i class="ti ti-moon-stars"></i></div>
+    <h1>Vedic Astrology Advisor</h1>
+    <p>Personalized Jyotish reading powered by Parashara, Jaimini &amp; Vimshottari Dasha principles</p>
+    <div class="hero-badges">
+      <span class="badge badge-purple"><i class="ti ti-planet"></i> Birth Chart</span>
+      <span class="badge badge-teal"><i class="ti ti-clock"></i> Dasha Analysis</span>
+      <span class="badge badge-coral"><i class="ti ti-trending-up"></i> 5-Year Forecast</span>
+    </div>
+  </div>
+
+  <div class="steps" id="stepIndicator">
+    <div class="step-dot active" id="s1">1<span class="step-label">Details</span></div>
+    <div class="step-line" id="l1"></div>
+    <div class="step-dot" id="s2">2<span class="step-label">Concerns</span></div>
+    <div class="step-line" id="l2"></div>
+    <div class="step-dot" id="s3">3<span class="step-label">Reading</span></div>
+  </div>
+
+  <!-- Step 1 -->
+  <div id="step1">
+    <div class="card">
+      <div class="section-label"><i class="ti ti-user-circle"></i> Personal details</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Full name <span class="req">*</span></label>
+          <input type="text" id="name" placeholder="As on birth certificate" />
+        </div>
+        <div class="form-group">
+          <label for="gender">Gender <span class="req">*</span></label>
+          <select id="gender">
+            <option value="">Select...</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Non-binary</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dob">Date of birth <span class="req">*</span></label>
+          <input type="date" id="dob" />
+        </div>
+        <div class="form-group">
+          <label for="birthtime">Exact birth time <span class="req">*</span></label>
+          <input type="time" id="birthtime" />
+          <div class="field-hint">Accurate time = accurate Lagna &amp; Dasha</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="timeaccuracy">Birth time accuracy</label>
+        <select id="timeaccuracy">
+          <option value="Exact">Exact — from birth certificate / hospital record</option>
+          <option value="Approximate">Approximate — family memory (±15–30 min)</option>
+          <option value="Unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="birthplace">Place of birth <span class="req">*</span></label>
+          <input type="text" id="birthplace" placeholder="City, State, Country" />
+        </div>
+        <div class="form-group">
+          <label for="currentcity">Current city</label>
+          <input type="text" id="currentcity" placeholder="Where you live now" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label"><i class="ti ti-briefcase"></i> Life context</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="relationship">Relationship status</label>
+          <select id="relationship">
+            <option value="">Select...</option>
+            <option>Single</option>
+            <option>In a relationship</option>
+            <option>Engaged</option>
+            <option>Married</option>
+            <option>Divorced / Separated</option>
+            <option>Widowed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="profession">Profession / field</label>
+          <input type="text" id="profession" placeholder="e.g. HR professional, Engineer" />
+        </div>
+      </div>
+    </div>
+
+    <div id="err1" class="error-msg">
+      <i class="ti ti-alert-circle"></i>
+      Please fill in all required fields — name, gender, date of birth, birth time, and place of birth.
+    </div>
+
+    <button class="btn btn-primary" onclick="goStep2()">
+      Continue <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+
+  <!-- Step 2 -->
+  <div id="step2" style="display:none;">
+    <div class="card">
+      <div class="section-label"><i class="ti ti-focus"></i> Your top 3 concerns</div>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:1.25rem;">
+        What areas do you most want this reading to address? Be specific for deeper insights.
+      </p>
+      <div class="concern-row">
+        <span class="concern-num">1</span>
+        <input type="text" id="c1" placeholder="e.g. Career growth and whether to switch jobs" />
+      </div>
+      <div class="concern-row">
+        <span class="concern-num">2</span>
+        <input type="text" id="c2" placeholder="e.g. Marriage timing and finding the right partner" />
+      </div>
+      <div class="concern-row">
+        <span class="concern-num">3</span>
+        <input type="text" id="c3" placeholder="e.g. Financial growth and investment decisions" />
+      </div>
+    </div>
+
+    <div class="card card-info">
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <i class="ti ti-info-circle" style="color:var(--teal-600); font-size:20px; flex-shrink:0; margin-top:2px;"></i>
+        <div>
+          <p style="font-size:13px; font-weight:600; color:var(--teal-600); margin-bottom:4px;">About this reading</p>
+          <p style="font-size:12px; color:var(--text-secondary); line-height:1.65;">
+            This advisor uses classical Vedic astrology principles including Parashara Hora Shastra, Jaimini Sutras, Nakshatra analysis, and Vimshottari Dasha for guidance. Planetary positions are calculated based on your birth details. Results are intended for self-reflection and guidance — not a substitute for professional advice.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep1()"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn btn-primary" onclick="generateReading()" id="generateBtn">
+        <i class="ti ti-stars"></i> Generate my reading
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div id="step3" style="display:none;">
+    <div id="loadingBox" class="loading-box">
+      <div class="spinner"></div>
+      <div class="loading-title">Computing your birth chart...</div>
+      <div class="loading-sub" id="loadingSub">Calculating planetary positions and dashas</div>
+      <div class="loading-pills">
+        <span class="loading-pill active" id="pill0">Birth chart</span>
+        <span class="loading-pill" id="pill1">Life patterns</span>
+        <span class="loading-pill" id="pill2">Career &amp; wealth</span>
+        <span class="loading-pill" id="pill3">Relationships</span>
+        <span class="loading-pill" id="pill4">Dasha analysis</span>
+        <span class="loading-pill" id="pill5">5-year forecast</span>
+        <span class="loading-pill" id="pill6">Remedies</span>
+      </div>
+    </div>
+
+    <div id="resultBox" style="display:none;">
+      <div class="result-banner">
+        <div class="result-avatar" id="resultInitials">RK</div>
+        <div>
+          <div class="result-banner-name" id="resultName">Your Vedic Reading</div>
+          <div class="result-banner-sub" id="resultSub">Generated on —</div>
+        </div>
+      </div>
+      <div class="result-body" id="resultBody"></div>
+      <button class="btn btn-secondary" onclick="resetApp()" style="width:100%;">
+        <i class="ti ti-refresh"></i> New reading
+      </button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Vedic Astrology Advisor &nbsp;·&nbsp; Powered by AI &nbsp;·&nbsp; For guidance and self-reflection only</p>
+  </div>
+
+</div>
+
+<script>
+const ANTHROPIC_API_KEY = "YOUR_API_KEY_HERE";
+
+const loadingSteps = [
+  "Calculating planetary positions and dashas",
+  "Analyzing Lagna, Moon and Sun signs",
+  "Computing Vimshottari Dasha periods",
+  "Examining yogas, doshas and transits",
+  "Preparing 5-year forecast table",
+  "Formulating remedies and guidance"
+];
+
+let loadingInterval, pillInterval;
+
+function setStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('s' + i);
+    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    const label = dot.querySelector('.step-label');
+    dot.innerHTML = (i < n ? '<i class="ti ti-check"></i>' : i) + (label ? label.outerHTML : '');
+    if (i <= 2) document.getElementById('l' + i).className = 'step-line' + (i < n ? ' done' : '');
+  }
+}
+
+function v(id) { return document.getElementById(id).value.trim(); }
+
+function goStep1() {
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+  setStep(1);
+}
+
+function goStep2() {
+  if (!v('name') || !v('gender') || !v('dob') || !v('birthtime') || !v('birthplace')) {
+    document.getElementById('err1').style.display = 'flex';
+    return;
+  }
+  document.getElementById('err1').style.display = 'none';
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  setStep(2);
+}
+
+function buildPrompt() {
+  return `You are an expert Vedic astrologer specializing in Parashara, Jaimini, Nakshatra, Vimshottari Dasha, and Transit Analysis. Please provide a comprehensive Vedic astrology reading.
+
+CLIENT DETAILS:
+- Full Name: ${v('name')}
+- Gender: ${v('gender')}
+- Date of Birth: ${v('dob')}
+- Exact Birth Time: ${v('birthtime')}
+- Birth Time Accuracy: ${v('timeaccuracy')}
+- Place of Birth: ${v('birthplace')}
+- Current City: ${v('currentcity') || 'Not specified'}
+- Relationship Status: ${v('relationship') || 'Not specified'}
+- Profession: ${v('profession') || 'Not specified'}
+- Top 3 Current Concerns:
+  1. ${v('c1') || 'General life guidance'}
+  2. ${v('c2') || 'Not specified'}
+  3. ${v('c3') || 'Not specified'}
+
+Please provide a comprehensive reading covering ALL sections below. Use markdown tables wherever possible. Be specific with astrological reasoning.
+
+### 1. Birth Chart Summary
+Calculate and provide:
+- Lagna (Ascendant) based on birth time and location
+- Moon Sign (Rashi)
+- Sun Sign
+- Nakshatra & Pada (with ruling deity and symbol)
+- Key planetary placements (all 9 grahas with house positions)
+- Key strengths & weaknesses from the chart
+- Major Yogas present (Raj Yoga, Dhana Yoga, etc.)
+- Doshas if any (Mangal Dosha, Kaal Sarpa, etc.)
+- Functional benefic and malefic planets for this Lagna
+
+### 2. Life Pattern Analysis
+Analyze:
+- Core personality traits based on Lagna + Moon
+- Childhood and family influences (4th house, Moon analysis)
+- Repeating karmic patterns (Rahu/Ketu axis)
+- Relationship tendencies (7th house analysis)
+- Career strengths and blind spots (10th house, 6th house)
+- Financial habits and challenges (2nd, 11th house)
+
+### 3. Career & Wealth (Highest Priority)
+Provide detailed analysis of:
+- Career suitability (suitable professions/industries)
+- Job vs Business potential
+- Leadership and authority potential (Sun, 10th lord)
+- Government/public sector potential
+- Foreign opportunities (12th house, Rahu)
+- Wealth accumulation potential
+- Investment and property prospects
+
+Include an age-range table:
+| Life Phase | Age Range | Career Focus | Wealth Potential |
+|---|---|---|---|
+
+### 4. Relationships & Marriage
+Analyze:
+- Love vs arranged marriage potential
+- Marriage timing windows (with Dasha/transit reasoning)
+- Spouse characteristics (7th house lord, navamsa)
+- Relationship strengths and risks
+
+### 5. Current Dasha Analysis
+Based on the birth date, calculate and explain:
+- Current Mahadasha (planet, period, themes)
+- Current Antardasha (sub-period planet and influence)
+- Current opportunities this period offers
+- Current challenges and cautions
+
+### 6. 5-Year Forecast
+| Year | Career | Money | Relationships | Health |
+|---|---|---|---|---|
+
+Then state: Best year, Toughest year, Major turning points.
+
+### 7. Remedies
+Recommend only what is astrologically justified:
+- Mantras (with frequency/timing)
+- Donations (day, item, beneficiary)
+- Spiritual practices
+- Gemstones (only if strongly supported by chart)
+
+Important: Use clear markdown ### headers, tables wherever appropriate, be specific with house lords and dasha periods, distinguish facts from interpretations, be honest about risks.`;
+}
+
+async function generateReading() {
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'block';
+  document.getElementById('loadingBox').style.display = 'block';
+  document.getElementById('resultBox').style.display = 'none';
+  setStep(3);
+
+  let msgIdx = 0, pillIdx = 0;
+  loadingInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingSteps.length;
+    document.getElementById('loadingSub').textContent = loadingSteps[msgIdx];
+  }, 3000);
+  pillInterval = setInterval(() => {
+    document.querySelectorAll('.loading-pill').forEach((p, i) => {
+      p.className = 'loading-pill' + (i === pillIdx ? ' active' : '');
+    });
+    pillIdx = (pillIdx + 1) % 7;
+  }, 2000);
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 4000,
+        messages: [{ role: "user", content: buildPrompt() }]
+      })
+    });
+
+    const data = await res.json();
+    clearInterval(loadingInterval);
+    clearInterval(pillInterval);
+
+    if (data.error) throw new Error(data.error.message);
+
+    const text = data.content.map(b => b.text || '').join('');
+    renderResult(text);
+
+  } catch (e) {
+    clearInterval(loadingInterval);
+    clearInterval(pillInterval);
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('resultBox').style.display = 'block';
+    document.getElementById('resultBody').innerHTML = `<div style="padding:1rem; background:var(--coral-50); border-radius:var(--radius-md); color:var(--coral-600);">
+      <strong>Error:</strong> ${e.message}<br><br>
+      If you see "API key" errors, make sure you've replaced <code>YOUR_API_KEY_HERE</code> in the HTML file with your actual Anthropic API key.
+    </div>`;
+    document.getElementById('resultName').textContent = 'Error';
+    document.getElementById('resultSub').textContent = 'Reading could not be generated';
+  }
+}
+
+function renderResult(markdown) {
+  document.getElementById('loadingBox').style.display = 'none';
+  const name = v('name');
+  const initials = name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('resultInitials').textContent = initials;
+  document.getElementById('resultName').textContent = name + "'s Vedic Reading";
+  document.getElementById('resultSub').textContent = 'Generated on ' + new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('resultBody').innerHTML = mdToHtml(markdown);
+  document.getElementById('resultBox').style.display = 'block';
+}
+
+function mdToHtml(md) {
+  let html = md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^#### (.+)$/gm,'<h4>$1</h4>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^---+$/gm,'<hr>');
+
+  html = html.replace(/((\|[^\n]+\|\n?)+)/g, match => {
+    const rows = match.trim().split('\n').filter(r => r.includes('|'));
+    if (rows.length < 2) return match;
+    const isSep = r => /^\|[\s\-:|]+\|$/.test(r);
+    let out = '<table>';
+    rows.forEach((row, i) => {
+      if (isSep(row)) return;
+      const isHead = i === 0 && rows[1] && isSep(rows[1]);
+      const cells = row.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+      const tag = isHead ? 'th' : 'td';
+      out += '<tr>' + cells.map(c => `<${tag}>${c}</${tag}>`).join('') + '</tr>';
+    });
+    return out + '</table>';
+  });
+
+  html = html
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
+    .replace(/(<li>[\s\S]*?<\/li>\n?)+/g, m => '<ul>' + m + '</ul>')
+    .replace(/\n{2,}/g, '</p><p>')
+    .replace(/\n/g,'<br>');
+
+  return '<p>' + html + '</p>';
+}
+
+function resetApp() {
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('generateBtn').disabled = false;
+  ['name','gender','dob','birthtime','birthplace','currentcity','relationship','profession','c1','c2','c3']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  setStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
