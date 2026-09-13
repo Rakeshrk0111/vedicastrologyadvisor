@@ -547,8 +547,6 @@ textarea { resize: vertical; min-height: 80px; }
 </div>
 
 <script>
-const ANTHROPIC_API_KEY = "YOUR_API_KEY_HERE";
-
 const loadingSteps = [
   "Calculating planetary positions and dashas",
   "Analyzing Lagna, Moon and Sun signs",
@@ -589,89 +587,21 @@ function goStep2() {
   setStep(2);
 }
 
-function buildPrompt() {
-  return `You are an expert Vedic astrologer specializing in Parashara, Jaimini, Nakshatra, Vimshottari Dasha, and Transit Analysis. Please provide a comprehensive Vedic astrology reading.
-
-CLIENT DETAILS:
-- Full Name: ${v('name')}
-- Gender: ${v('gender')}
-- Date of Birth: ${v('dob')}
-- Exact Birth Time: ${v('birthtime')}
-- Birth Time Accuracy: ${v('timeaccuracy')}
-- Place of Birth: ${v('birthplace')}
-- Current City: ${v('currentcity') || 'Not specified'}
-- Relationship Status: ${v('relationship') || 'Not specified'}
-- Profession: ${v('profession') || 'Not specified'}
-- Top 3 Current Concerns:
-  1. ${v('c1') || 'General life guidance'}
-  2. ${v('c2') || 'Not specified'}
-  3. ${v('c3') || 'Not specified'}
-
-Please provide a comprehensive reading covering ALL sections below. Use markdown tables wherever possible. Be specific with astrological reasoning.
-
-### 1. Birth Chart Summary
-Calculate and provide:
-- Lagna (Ascendant) based on birth time and location
-- Moon Sign (Rashi)
-- Sun Sign
-- Nakshatra & Pada (with ruling deity and symbol)
-- Key planetary placements (all 9 grahas with house positions)
-- Key strengths & weaknesses from the chart
-- Major Yogas present (Raj Yoga, Dhana Yoga, etc.)
-- Doshas if any (Mangal Dosha, Kaal Sarpa, etc.)
-- Functional benefic and malefic planets for this Lagna
-
-### 2. Life Pattern Analysis
-Analyze:
-- Core personality traits based on Lagna + Moon
-- Childhood and family influences (4th house, Moon analysis)
-- Repeating karmic patterns (Rahu/Ketu axis)
-- Relationship tendencies (7th house analysis)
-- Career strengths and blind spots (10th house, 6th house)
-- Financial habits and challenges (2nd, 11th house)
-
-### 3. Career & Wealth (Highest Priority)
-Provide detailed analysis of:
-- Career suitability (suitable professions/industries)
-- Job vs Business potential
-- Leadership and authority potential (Sun, 10th lord)
-- Government/public sector potential
-- Foreign opportunities (12th house, Rahu)
-- Wealth accumulation potential
-- Investment and property prospects
-
-Include an age-range table:
-| Life Phase | Age Range | Career Focus | Wealth Potential |
-|---|---|---|---|
-
-### 4. Relationships & Marriage
-Analyze:
-- Love vs arranged marriage potential
-- Marriage timing windows (with Dasha/transit reasoning)
-- Spouse characteristics (7th house lord, navamsa)
-- Relationship strengths and risks
-
-### 5. Current Dasha Analysis
-Based on the birth date, calculate and explain:
-- Current Mahadasha (planet, period, themes)
-- Current Antardasha (sub-period planet and influence)
-- Current opportunities this period offers
-- Current challenges and cautions
-
-### 6. 5-Year Forecast
-| Year | Career | Money | Relationships | Health |
-|---|---|---|---|---|
-
-Then state: Best year, Toughest year, Major turning points.
-
-### 7. Remedies
-Recommend only what is astrologically justified:
-- Mantras (with frequency/timing)
-- Donations (day, item, beneficiary)
-- Spiritual practices
-- Gemstones (only if strongly supported by chart)
-
-Important: Use clear markdown ### headers, tables wherever appropriate, be specific with house lords and dasha periods, distinguish facts from interpretations, be honest about risks.`;
+function collectDetails() {
+  return {
+    name: v('name'),
+    gender: v('gender'),
+    dob: v('dob'),
+    birthtime: v('birthtime'),
+    timeaccuracy: v('timeaccuracy'),
+    birthplace: v('birthplace'),
+    currentcity: v('currentcity'),
+    relationship: v('relationship'),
+    profession: v('profession'),
+    c1: v('c1'),
+    c2: v('c2'),
+    c3: v('c3')
+  };
 }
 
 async function generateReading() {
@@ -694,53 +624,68 @@ async function generateReading() {
     pillIdx = (pillIdx + 1) % 7;
   }, 2000);
 
+  const stopLoading = () => { clearInterval(loadingInterval); clearInterval(pillInterval); };
+
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 4000,
-        messages: [{ role: "user", content: buildPrompt() }]
-      })
+    const res = await fetch('/api/reading', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(collectDetails())
     });
 
-    const data = await res.json();
-    clearInterval(loadingInterval);
-    clearInterval(pillInterval);
+    if (!res.ok) {
+      let message = 'The reading could not be generated (error ' + res.status + ').';
+      try {
+        const data = await res.json();
+        if (data && data.error) message = data.error;
+      } catch (_) { /* non-JSON error body */ }
+      throw new Error(message);
+    }
 
-    if (data.error) throw new Error(data.error.message);
+    if (!res.body) throw new Error('Your browser could not read the streamed reading.');
 
-    const text = data.content.map(b => b.text || '').join('');
-    renderResult(text);
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '', started = false, pending = false;
+
+    const paint = () => { pending = false; document.getElementById('resultBody').innerHTML = mdToHtml(text); };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value, { stream: true });
+      if (!text.trim()) continue;
+      if (!started) { started = true; stopLoading(); beginResult(); }
+      if (!pending) { pending = true; requestAnimationFrame(paint); }
+    }
+    text += decoder.decode();
+    stopLoading();
+
+    if (!text.trim()) throw new Error('The astrologer returned an empty reading. Please try again.');
+
+    if (!started) beginResult();
+    paint();
 
   } catch (e) {
-    clearInterval(loadingInterval);
-    clearInterval(pillInterval);
+    stopLoading();
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('resultBox').style.display = 'block';
     document.getElementById('resultBody').innerHTML = `<div style="padding:1rem; background:var(--coral-50); border-radius:var(--radius-md); color:var(--coral-600);">
-      <strong>Error:</strong> ${e.message}<br><br>
-      If you see "API key" errors, make sure you've replaced <code>YOUR_API_KEY_HERE</code> in the HTML file with your actual Anthropic API key.
+      <strong>Error:</strong> ${e.message}
     </div>`;
     document.getElementById('resultName').textContent = 'Error';
     document.getElementById('resultSub').textContent = 'Reading could not be generated';
   }
 }
 
-function renderResult(markdown) {
+function beginResult() {
   document.getElementById('loadingBox').style.display = 'none';
   const name = v('name');
-  const initials = name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
-  document.getElementById('resultInitials').textContent = initials;
+  const initials = name.split(/\s+/).filter(Boolean).map(w => w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('resultInitials').textContent = initials || '\u2728';
   document.getElementById('resultName').textContent = name + "'s Vedic Reading";
   document.getElementById('resultSub').textContent = 'Generated on ' + new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
-  document.getElementById('resultBody').innerHTML = mdToHtml(markdown);
+  document.getElementById('resultBody').innerHTML = '';
   document.getElementById('resultBox').style.display = 'block';
 }
 
